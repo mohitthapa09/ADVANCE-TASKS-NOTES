@@ -5,11 +5,6 @@ const { getFirestore, Timestamp } = require('firebase-admin/firestore');
 const { getMessaging } = require('firebase-admin/messaging');
 const { sendSms } = require('../services/Twilio');
 const { sendWhatsapp } = require('../services/whatsapp');
-//require("dotenv").config(); // Load environment variables from .env file
-import dotenv from 'dotenv';
-dotenv.config();
-const apikey = process.env.API_KEY; // Access the API  key from the environment variable
-console.log('API Key:', apikey); // Log the API key to verify it's being read correctly 
 initializeApp();
 const db = getFirestore();
 

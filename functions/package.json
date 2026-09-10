@@ -16,6 +16,5 @@
     "firebase-functions": "^5.0.0",
     "twilio": "^5.0.0"
   },
-  "type": "module",
   "private": true
 }
