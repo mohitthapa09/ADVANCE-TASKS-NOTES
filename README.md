@@ -1,131 +1,137 @@
 # ATN Workspace
 
-A static (no build step) web app — plain HTML/CSS/JS, Firebase Web SDK loaded
-straight from Google's CDN. There is no Vite/Webpack anywhere in this project;
-it's meant to be opened with any static file server.
+A task and notes web app. You sign in, get a dashboard with a Kanban board, a notes section, reminders, and the option to share your work or export it as PDF/DOCX. No build tools, no framework — just HTML, CSS and JavaScript talking to Firebase.
 
-## Why "Sign In" wasn't doing anything
+## What it does
 
-The console showed:
+- Sign in with email/password or phone number + OTP
+- Kanban board — add columns, add tasks, drag and drop them between columns
+- Notes with a rich text editor (bold, lists, links, etc.)
+- Dashboard with an activity chart showing what you've been doing
+- Reminders and notifications — in-app, push, and optionally SMS/WhatsApp
+- Export notes or boards to PDF or Word (.docx)
+- Share a note or board with a link
+
+## Technology used
+
+- **Frontend:** HTML, CSS, vanilla JavaScript (ES modules)
+- **Backend / database:** Firebase (Authentication, Firestore, Storage, Cloud Messaging)
+- **Serverless functions:** Firebase Cloud Functions (Node.js) for sending reminders through Twilio (SMS/WhatsApp)
+- **Libraries used in the browser:** Quill (text editor), Chart.js (dashboard chart), SortableJS (drag and drop), html2pdf.js and docx.js (exporting files), JSZip
+
+## Project structure
 
 ```
-Uncaught TypeError: Cannot read properties of undefined (reading 'VITE_FIREBASE_API_KEY')
-  at config.js:8
+ATN Workspace/
+├── index.html                        Sign-in page (email or phone + OTP)
+├── signup.html                       Sign-up page
+├── dashboard.html                    Main app shell — loads dashboard, notes, kanban views
+├── share.html                        Public page for viewing a shared note/board
+│
+├── assets/
+│   ├── css/style.css                 All styling for the app
+│   ├── icons/atn.svg                 App logo
+│   └── js/
+│       ├── app.js                    Entry point — boots the app, loads the right view
+│       └── utils.js                  Shared helper functions
+│
+├── components/                       One file per UI section
+│   ├── auth.js                       Sign-in logic (email/password + phone OTP)
+│   ├── signup.js                     Sign-up form logic
+│   ├── navbar.js                     Top navigation bar
+│   ├── sidebar.js                    Side menu / view switcher
+│   ├── dashboard.js                  Dashboard view + activity chart
+│   ├── notes.js                      Notes view (Quill rich text editor)
+│   ├── kanban.js                     Kanban board — columns, tasks, drag & drop
+│   ├── notifications.js              In-app notifications / reminders UI
+│   └── share.js                      "Share" modal and link generation
+│
+├── firebase/
+│   ├── config.js                     Initializes the Firebase app
+│   ├── firebase-keys.js              Your real Firebase project keys (git-ignored)
+│   ├── firebase-keys.example.js      Template showing what firebase-keys.js should look like
+│   ├── auth.js                       Firebase Authentication wrapper functions
+│   ├── firestore.js                  Firestore read/write helper functions
+│   ├── storage.js                    Firebase Storage upload/download helpers
+│   └── messaging.js                  Firebase Cloud Messaging (push notifications) setup
+│
+├── services/                         Feature logic that sits above the raw Firebase calls
+│   ├── export.js                     Turns a note/board into PDF or DOCX
+│   ├── share.js                      Creates and resolves shareable links
+│   ├── whatsapp.js                   Sends WhatsApp reminders (calls the Cloud Function)
+│   └── Twilio.js                     Sends SMS reminders (calls the Cloud Function)
+│
+├── functions/                        Firebase Cloud Functions backend (deployed separately)
+│   ├── index.js                      Scheduled/triggered functions that send reminders via Twilio
+│   └── package.json                  Backend dependencies (firebase-admin, firebase-functions, twilio)
+│
+├── public/
+│   └── firebase-messaging-sw.js      Service worker required for push notifications
+│
+├── firestore.rules                   Who can read/write what in Firestore
+├── storage.rules                     Who can read/write files in Storage
+├── firestore.indexes.json            Composite indexes Firestore needs for some queries
+├── firebase.json                     Firebase project config (which files map to which service)
+└── .gitignore                        Keeps firebase-keys.js and other local files out of git
 ```
 
-`firebase/config.js` (and `firebase/messaging.js`) were written as if the
-project were bundled with **Vite**, using `import.meta.env.VITE_FIREBASE_*`.
-But nothing here goes through Vite — there's no `package.json`, no
-`vite.config.js`, and every Firebase import is a raw
-`https://www.gstatic.com/firebasejs/...` URL. In a plain browser, `import.meta.env`
-is simply `undefined`, so reading `.VITE_FIREBASE_API_KEY` off it threw and
-crashed the whole module before it ever got to `initializeApp()`.
+## How to run it
 
-Because `index.html` loads `components/auth.js` as a `type="module"` script,
-and that module imports `firebase/config.js` at the top of its import chain,
-**the crash happened before any of your event listeners were attached** — so
-clicking "Sign In" visibly did nothing. That's the "next page not going"
-symptom.
+1. **Get a Firebase project.**
+   Go to the [Firebase Console](https://console.firebase.google.com), create a project (or use one you already have), then add a Web App to it. Firebase will show you a `firebaseConfig` object — copy it.
 
-## The fix
+2. **Add your keys.**
+   Open `firebase/firebase-keys.js` and paste your real values in. There's a `firebase/firebase-keys.example.js` file you can look at as a template if you need to recreate it. This file is git-ignored on purpose, so your keys never get pushed to GitHub.
 
-- `firebase/config.js` and `firebase/messaging.js` now import a plain
-  `firebaseConfig` object from `firebase/firebase-keys.js` instead of reading
-  `import.meta.env`.
-- `firebase/firebase-keys.js` is a new file, listed in `.gitignore`, where
-  you paste your **real** Firebase project credentials.
-- `firebase/firebase-keys.example.js` is the checked-in template so anyone
-  cloning the repo knows what shape the file needs.
+3. **Turn on the Firebase services you need**, from the left sidebar of the console:
+   - **Authentication** → Sign-in method → enable Email/Password (and Phone, if you want OTP login)
+   - **Firestore Database** → Create database
+   - **Storage** → Get started
+   - **Cloud Messaging** (optional, only for push notifications) → generate a Web Push certificate and paste it into `firebase-keys.js` as `vapidKey`
 
-## Setup
+4. **Deploy the security rules.**
+   Without this, every save/add/export/share action will silently fail. Either:
+   ```bash
+   npm install -g firebase-tools
+   firebase login
+   firebase use --add
+   firebase deploy --only firestore:rules,storage
+   ```
+   or just open Firestore/Storage → Rules in the console and paste in the contents of `firestore.rules` / `storage.rules` yourself.
 
-1. **Get your Firebase config.** In the
-   [Firebase Console](https://console.firebase.google.com), open your
-   project → ⚙️ Project settings → General → "Your apps" → the web app (or
-   create one with the `</>` icon). Copy the `firebaseConfig` object shown
-   there.
-2. **Fill in `firebase/firebase-keys.js`** with those real values (this file
-   already exists in this build with placeholders — just replace them).
-3. **Enable the services you use**, in the left sidebar of the console:
-   - Authentication → Sign-in method → enable Email/Password and any
-     OAuth providers you want (Google/GitHub/Facebook/Apple), and Phone if
-     you use the OTP tab.
-   - Firestore Database → Create database.
-   - Storage → Get started.
-4. **(Optional, for push notifications)** In Project settings → Cloud
-   Messaging → Web configuration → generate a Web Push certificate (VAPID
-   key), and:
-   - paste it as `vapidKey` in `firebase/firebase-keys.js`
-   - paste the same `firebaseConfig` values into
-     `public/firebase-messaging-sw.js` (service workers can't import your
-     keys file, so those stay hardcoded there — they're already stubbed
-     with `YOUR_API_KEY` etc.)
-5. **Run it.** Any static server works, e.g. one of:
+5. **Serve the files.** This is a static site, so any local server works:
    ```bash
    npx serve .
    # or
    python3 -m http.server 5500
    ```
-   or the VS Code "Live Server" extension (this is what the
-   `127.0.0.1:5500` URL in your screenshot is). Then open the served
-   `index.html`.
+   Then open `index.html` in your browser.
 
-## Why Save / Add Column / Add Task / Share / Reminders / Activity all "don't work"
+6. **(Optional) Set up the reminder functions.**
+   ```bash
+   cd functions
+   npm install
+   ```
+   Then set `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` and `TWILIO_WHATSAPP_FROM` in your Cloud Functions config before deploying, if you want SMS/WhatsApp reminders to go out.
 
-This is very likely a **second, separate** issue from the Vite one above —
-and it explains basically every remaining symptom at once (Save doing
-nothing, Add Column/Add Task closing without adding anything, exports
-coming back empty, Share stuck forever on "Generating a shareable link…",
-"Upcoming Reminders" always empty, the Activity chart always flat at zero).
+## What I learned
 
-There was **no `firestore.rules` file anywhere in this project.** That
-means Firestore has been running on whatever default it was given when you
-clicked "Create database" in the console:
-- **Production mode** → deny absolutely all reads/writes → every single
-  Firestore call in the app (`setDoc`, `updateDoc`, `getDocs`,
-  `onSnapshot`, ...) fails with a `permission-denied` error.
-- **Test mode** → allowed everything for 30 days, then automatically
-  reverted to deny-all — if your project is more than a month old, you've
-  likely just hit that expiry.
+- How Firebase Authentication, Firestore and Storage fit together in a real app, not just a toy example — sign-in, saving data, and file uploads all had to be wired to the same project.
+- How security rules actually work. I assumed once the code called `setDoc()` or `getDocs()` it would just work, but Firestore denies everything by default until you write rules that allow it.
+- How to structure a no-framework project so it doesn't turn into spaghetti — splitting the UI into one file per feature in `components/` made this much easier to manage than one giant script.
+- How to send notifications outside the browser (SMS/WhatsApp) using Cloud Functions and Twilio, instead of everything happening client-side.
 
-Either way, the app's own code was never the problem for these features —
-there was nothing to configure it to talk to Firestore with permission.
+## Problems I faced and how I solved them
 
-**To fix it:** this build adds `firestore.rules`, `storage.rules`,
-`firebase.json`, and `firestore.indexes.json` to the project root. Deploy
-them with the [Firebase CLI](https://firebase.google.com/docs/cli):
+**Sign in button did nothing.**
+The console showed an error trying to read `import.meta.env.VITE_FIREBASE_API_KEY`. That's a Vite-only feature, and this project isn't built with Vite — it's plain HTML/JS. Because the broken import was at the top of the auth module, the whole script crashed before any click listeners were even attached, so nothing on the page responded. Fixed by reading the Firebase config from a plain JS file (`firebase-keys.js`) instead.
 
-```bash
-npm install -g firebase-tools   # if you don't have it yet
-firebase login
-firebase use --add               # pick your "advance-tasks-notes" project
-firebase deploy --only firestore:rules,storage
-```
+**Save, Add Task, Add Column, Export and Share all failed silently.**
+Turned out there was no `firestore.rules` file in the project, so Firestore was running on its default (deny everything, or a 30-day test mode that had expired). Every database call was being rejected with a permission error, but the app wasn't showing that error anywhere, so it just looked broken. Fixed by writing proper `firestore.rules` / `storage.rules` and deploying them, and by making the app show the real Firebase error in a toast message instead of failing quietly.
 
-Or, without the CLI: open the Firebase Console → **Firestore Database →
-Rules** tab, paste in the contents of `firestore.rules`, and click
-**Publish**; do the same for **Storage → Rules** with `storage.rules`.
+**Reminders and the activity chart stayed empty.**
+Same root cause as above — no data was ever getting written to Firestore in the first place, so there was nothing to show. Once the rules were deployed, both started working.
 
-After that, every button this build touched should actually persist data:
-Save, Add Column, Add Task, Export, Share, and reminders/notifications.
+## License
 
-**How to tell if this is really it:** open the browser DevTools console
-while clicking any of those buttons. This build now surfaces the real
-Firebase error in the on-screen toast too (e.g. *"Could not save the task:
-permission denied — your Firestore security rules need to allow this."*)
-instead of failing silently — if you see `permission-denied` anywhere,
-you haven't deployed the rules yet.
-
-## The `functions/` folder
-
-That's a separate piece — a Firebase Cloud Functions backend (Node,
-CommonJS, deployed via the Firebase CLI) that sends reminder
-push/SMS/WhatsApp notifications using Twilio. It already has its own
-`functions/package.json`. To use it:
-```bash
-cd functions
-npm install
-```
-and set `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`,
-`TWILIO_WHATSAPP_FROM` as Cloud Functions environment config/secrets before
-deploying. It's independent of the frontend bug above.
+Personal project.
