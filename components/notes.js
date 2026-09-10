@@ -290,7 +290,7 @@ export const initNotes = () => {
     placeholder: 'Start writing...'
   });
 
-  // Sorted client-side (see comment in kanban.js) instead of orderBy() in
+  // Sorted client-side (see comment in tasks.js) instead of orderBy() in
   // the query, so a missing Firestore composite index can't silently break
   // the notes list.
   const notesQuery = query(collection(db, 'notes'), where('uid', '==', auth.currentUser.uid));

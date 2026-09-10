@@ -4,13 +4,13 @@ import { initNavbar } from '../../components/navbar.js';
 import { initSidebar } from '../../components/sidebar.js';
 import { initDashboard } from '../../components/dashboard.js';
 import { initNotes } from '../../components/notes.js';
-import { initKanban } from '../../components/kanban.js';
+import { initTasks } from '../../components/tasks.js';
 import { initExport, openExportModal } from '../../components/export.js';
 import { initShare, openShareModal } from '../../components/share.js';
 import { initNotifications } from '../../components/notifications.js';
 import { showToast } from './utils.js';
 
-const views = ['dashboard', 'notes', 'kanban'];
+const views = ['dashboard', 'notes', 'tasks'];
 
 const showView = (view) => {
   if (!views.includes(view)) view = 'dashboard';
@@ -31,7 +31,7 @@ onAuthStateChanged(auth, (user) => {
   initSidebar();
   initDashboard();
   initNotes();
-  initKanban();
+  initTasks();
   initExport();
   initShare();
   initNotifications(user);

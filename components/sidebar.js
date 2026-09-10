@@ -8,8 +8,8 @@ export const initSidebar = () => {
     <button class="sidebar-item" data-view="notes">
       <i class="fa-solid fa-note-sticky"></i> Notes
     </button>
-    <button class="sidebar-item" data-view="kanban">
-      <i class="fa-solid fa-list-check"></i> Kanban
+    <button class="sidebar-item" data-view="tasks">
+      <i class="fa-solid fa-list-check"></i> Tasks
     </button>
     <button class="sidebar-item" data-view="dashboard" id="sidebar-export">
       <i class="fa-solid fa-file-export"></i> Export Center

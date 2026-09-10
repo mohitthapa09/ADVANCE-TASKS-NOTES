@@ -32,7 +32,7 @@ const sortByOrder = (arr) => [...arr].sort((a, b) => (a.order || 0) - (b.order |
 const seedDefaultColumns = async () => {
   const uidVal = auth.currentUser.uid;
   for (const col of DEFAULT_COLUMNS) {
-    const ref = doc(collection(db, 'kanban_columns'));
+    const ref = doc(collection(db, 'tasks_columns'));
     await setDoc(ref, {
       id: ref.id,
       uid: uidVal,
@@ -53,7 +53,7 @@ const loadBoardData = () => {
   // Firebase console, onSnapshot fails silently and the board never
   // updates — which looked like "adding a column/task does nothing, the
   // dialog just closes." Sorting client-side avoids that dependency.
-  const colsQuery = query(collection(db, 'kanban_columns'), where('uid', '==', uidVal));
+  const colsQuery = query(collection(db, 'tasks_columns'), where('uid', '==', uidVal));
   onSnapshot(colsQuery, (snap) => {
     columns = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     if (!columns.length && !seeded) {
@@ -77,7 +77,7 @@ const loadBoardData = () => {
 };
 
 const renderBoard = () => {
-  const board = document.getElementById('kanban-board');
+  const board = document.getElementById('tasks-board');
   if (!board) return;
 
   const orderedCols = sortByOrder(columns);
@@ -85,7 +85,7 @@ const renderBoard = () => {
   board.innerHTML = orderedCols.map((col) => {
     const colTasks = sortByOrder(tasks.filter((t) => t.columnId === col.id));
     return `
-      <div class="kanban-column glass" data-column-id="${col.id}">
+      <div class="tasks-column glass" data-column-id="${col.id}">
         <div class="column-header">
           <span class="column-handle"><i class="fa-solid fa-grip-vertical"></i></span>
           <span class="column-title" style="color:${col.color || '#fff'}">${escapeHtml(col.emoji || '')} ${escapeHtml(col.name)}</span>
@@ -141,15 +141,15 @@ const renderBoard = () => {
 
   // Sortable setup
   if (window.Sortable) {
-    const boardEl = document.getElementById('kanban-board');
+    const boardEl = document.getElementById('tasks-board');
     Sortable.create(boardEl, {
       animation: 200,
       handle: '.column-handle',
       ghostClass: 'dragging',
-      draggable: '.kanban-column',
+      draggable: '.tasks-column',
       onEnd: (evt) => {
         const colId = evt.item.dataset.columnId;
-        const newOrder = [...boardEl.querySelectorAll('.kanban-column')].map((el, index) => ({
+        const newOrder = [...boardEl.querySelectorAll('.tasks-column')].map((el, index) => ({
           id: el.dataset.columnId,
           order: index
         }));
@@ -248,7 +248,7 @@ const openModal = (html) => {
 };
 
 const updateColumnDoc = async (colId, data) => {
-  await updateDoc(doc(db, 'kanban_columns', colId), { ...data, updatedAt: serverTimestamp() });
+  await updateDoc(doc(db, 'tasks_columns', colId), { ...data, updatedAt: serverTimestamp() });
 };
 
 const openColumnModal = (colId = null) => {
@@ -294,7 +294,7 @@ const openColumnModal = (colId = null) => {
         await updateColumnDoc(editingColumnId, { name, emoji, color });
         showToast('Column updated', 'success');
       } else {
-        const ref = doc(collection(db, 'kanban_columns'));
+        const ref = doc(collection(db, 'tasks_columns'));
         await setDoc(ref, {
           id: ref.id,
           uid: auth.currentUser.uid,
@@ -323,7 +323,7 @@ const deleteColumn = async (colId) => {
   for (const t of colTasks) {
     await deleteDoc(doc(db, 'tasks', t.id));
   }
-  await deleteDoc(doc(db, 'kanban_columns', colId));
+  await deleteDoc(doc(db, 'tasks_columns', colId));
   showToast('Column deleted', 'success');
 };
 
@@ -478,15 +478,15 @@ const duplicateTask = async (taskId) => {
   showToast('Task duplicated', 'success');
 };
 
-export const initKanban = () => {
-  const root = document.getElementById('view-kanban');
+export const inittasks = () => {
+  const root = document.getElementById('view-tasks');
 
   root.innerHTML = `
     <div class="board-header">
-      <h1>🗂️ Kanban Board</h1>
+      <h1>🗂️ Tasks</h1>
       <button class="btn btn-primary" id="new-task-btn"><i class="fa-solid fa-plus"></i> New Task</button>
     </div>
-    <div class="kanban-board" id="kanban-board"></div>
+    <div class="tasks-board" id="tasks-board"></div>
   `;
 
   document.getElementById('new-task-btn').addEventListener('click', () => openTaskModal(null, columns[0]?.id));
