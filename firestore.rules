@@ -1,0 +1,60 @@
+rules_version = '2';
+
+// IMPORTANT: your project has no rules file in the repo, which almost
+// always means Firestore is still running on its default rules — and the
+// modern default is "deny everything." That would explain every one of
+// these symptoms at once: Save doing nothing, Add Column/Add Task closing
+// with no effect, exports coming back empty, Share stuck on "Generating a
+// shareable link…", Upcoming Reminders always empty, and the Activity
+// chart always flat. The app code can retry and show a nicer error, but it
+// cannot override rules — only deploying rules like these can fix it.
+//
+// Deploy with the Firebase CLI:
+//   firebase deploy --only firestore:rules
+// ...or paste this file's contents into:
+//   Firebase Console → Firestore Database → Rules → Publish
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /notes/{noteId} {
+      allow read, update, delete: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+    }
+
+    match /tasks/{taskId} {
+      allow read, update, delete: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+    }
+
+    match /kanban_columns/{columnId} {
+      allow read, update, delete: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+    }
+
+    match /notifications/{notificationId} {
+      allow read, update, delete: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+    }
+
+    // Shared read-only links (share.html?id=...) are meant to be openable
+    // by anyone with the link, including people who aren't signed in — so
+    // reads are public. Only the owner who created a link can write to it.
+    match /shares/{shareId} {
+      allow read: if true;
+      allow create: if isSignedIn() && request.resource.data.ownerUid == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.ownerUid == request.auth.uid;
+    }
+  }
+}

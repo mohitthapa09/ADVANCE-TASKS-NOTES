@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0F172A">
+  <title>ATN Workspace — Sign In</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="auth-body">
+
+  <main class="auth-page">
+    <div class="auth-card glass">
+      <div class="auth-brand">
+        <img src="./assets/icons/atn.svg" alt="ATN Logo" width="48" height="48">
+        <span>ATN Workspace</span>
+      </div>
+
+      <h1>Welcome back</h1>
+      <p class="auth-subtitle">Sign in to continue to your workspace</p>
+
+      <div class="auth-tabs" role="tablist">
+        <button class="auth-tab active" id="tab-email" data-tab="email">Email</button>
+        <button class="auth-tab" id="tab-phone" data-tab="phone">Phone</button>
+      </div>
+
+      <!-- Email / Password form -->
+      <form id="email-form" class="auth-form">
+        <label for="auth-email">Work email</label>
+        <input type="email" id="auth-email" placeholder="you@company.com" autocomplete="email" required>
+
+        <label for="auth-password">Password</label>
+        <input type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password" required>
+
+        <div class="auth-row">
+          <label class="checkbox-label">
+            <input type="checkbox" id="remember-me" checked>
+            Remember me
+          </label>
+          <button type="button" class="link-btn" id="forgot-password">Forgot password?</button>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="email-submit">
+          <span class="btn-label">Sign In</span>
+          <span class="spinner hidden" aria-hidden="true"></span>
+        </button>
+      </form>
+
+      <!-- Phone / OTP form -->
+      <form id="phone-form" class="auth-form hidden">
+        <label for="auth-phone">Phone number</label>
+        <input type="tel" id="auth-phone" placeholder="+1 555 000 0000" autocomplete="tel" required>
+
+        <div id="otp-step" class="hidden">
+          <label for="auth-otp">Verification code</label>
+          <input type="text" id="auth-otp" inputmode="numeric" placeholder="123456" maxlength="6" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="phone-submit">
+          <span id="phone-btn-label">Send Code</span>
+          <span class="spinner hidden" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="btn btn-ghost btn-block hidden" id="resend-code">Resend code</button>
+      </form>
+
+      <div class="auth-divider"><span>or continue with</span></div>
+
+      <div class="oauth-grid">
+        <button class="oauth-btn" data-provider="google" aria-label="Sign in with Google">
+          <i class="fa-brands fa-google"></i>
+        </button>
+        <button class="oauth-btn" data-provider="github" aria-label="Sign in with GitHub">
+          <i class="fa-brands fa-github"></i>
+        </button>
+        <button class="oauth-btn" data-provider="apple" aria-label="Sign in with Apple">
+          <i class="fa-brands fa-apple"></i>
+        </button>
+        <button class="oauth-btn" data-provider="facebook" aria-label="Sign in with Facebook">
+          <i class="fa-brands fa-facebook"></i>
+        </button>
+      </div>
+
+      <p id="auth-error" class="auth-error" role="alert"></p>
+      <div id="recaptcha-container"></div>
+
+      <p class="auth-switch">Don't have an account? <a href="signup.html">Create one</a></p>
+    </div>
+  </main>
+
+  <div id="toast-root" aria-live="polite"></div>
+
+  <script type="module" src="./components/auth.js"></script>
+</body>
+</html>

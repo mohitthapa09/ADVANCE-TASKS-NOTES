@@ -1,0 +1,17 @@
+rules_version = '2';
+
+// Deploy with: firebase deploy --only storage
+// ...or paste into: Firebase Console → Storage → Rules → Publish
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // firebase/storage.js uploads to `${folder}/${uid}/${filename}`
+    // (e.g. notes/AbC123.../..., attachments/AbC123.../...)
+    match /{folder}/{userId}/{fileName} {
+      // Readable by anyone with the URL (so images still show up in
+      // read-only shared notes); only the owner can upload/delete.
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
