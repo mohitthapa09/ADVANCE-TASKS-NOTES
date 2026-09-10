@@ -700,7 +700,7 @@ label {
   z-index: 1000;
 }
 
-/* Kanban */
+/* Tasks */
 .board-header {
   display: flex;
   justify-content: space-between;
@@ -714,7 +714,7 @@ label {
   font-size: 1.6rem;
 }
 
-.kanban-board {
+.Tasks-board {
   display: flex;
   gap: 16px;
   overflow-x: auto;
@@ -722,7 +722,7 @@ label {
   align-items: flex-start;
 }
 
-.kanban-column {
+.Tasks-column {
   min-width: 300px;
   max-width: 340px;
   flex-shrink: 0;
@@ -1112,7 +1112,7 @@ label {
   .notes-layout { grid-template-columns: 1fr; }
   .note-list-panel { display: block; height: 220px; }
   .stats-grid { grid-template-columns: 1fr; }
-  .kanban-column { min-width: 270px; }
+  .Tasks-column { min-width: 270px; }
   .form-row { grid-template-columns: 1fr; }
   .export-grid { grid-template-columns: 1fr; }
 }
