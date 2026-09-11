@@ -4,7 +4,7 @@ import { initNavbar } from '../../components/navbar.js';
 import { initSidebar } from '../../components/sidebar.js';
 import { initDashboard } from '../../components/dashboard.js';
 import { initNotes } from '../../components/notes.js';
-import { initKanban } from '../../components/Kanban.js';
+import { initTasks } from '../../components/tasks.js';
 import { initExport, openExportModal } from '../../components/export.js';
 import { initShare, openShareModal } from '../../components/share.js';
 import { initNotifications } from '../../components/notifications.js';
