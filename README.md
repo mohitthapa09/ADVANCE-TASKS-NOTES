@@ -1,11 +1,11 @@
 # ATN Workspace
 
-A task and notes web app. You sign in, get a dashboard with a tasks board, a notes section, reminders, and the option to share your work or export it as PDF/DOCX. No build tools, no framework — just HTML, CSS and JavaScript talking to Firebase.
+A task and notes web app. You sign in, get a dashboard with a Kanban board, a notes section, reminders, and the option to share your work or export it as PDF/DOCX. No build tools, no framework — just HTML, CSS and JavaScript talking to Firebase.
 
 ## What it does
 
 - Sign in with email/password or phone number + OTP
-- tasks board — add columns, add tasks, drag and drop them between columns
+- Kanban board — add columns, add tasks, drag and drop them between columns
 - Notes with a rich text editor (bold, lists, links, etc.)
 - Dashboard with an activity chart showing what you've been doing
 - Reminders and notifications — in-app, push, and optionally SMS/WhatsApp
@@ -25,7 +25,7 @@ A task and notes web app. You sign in, get a dashboard with a tasks board, a not
 ATN Workspace/
 ├── index.html                        Sign-in page (email or phone + OTP)
 ├── signup.html                       Sign-up page
-├── dashboard.html                    Main app shell — loads dashboard, notes, tasks views
+├── dashboard.html                    Main app shell — loads dashboard, notes, Kanban views
 ├── share.html                        Public page for viewing a shared note/board
 │
 ├── assets/
@@ -42,7 +42,7 @@ ATN Workspace/
 │   ├── sidebar.js                    Side menu / view switcher
 │   ├── dashboard.js                  Dashboard view + activity chart
 │   ├── notes.js                      Notes view (Quill rich text editor)
-│   ├── tasks.js                     tasks board — columns, tasks, drag & drop
+│   ├── Kanban.js                     Kanban board — columns, tasks, drag & drop
 │   ├── notifications.js              In-app notifications / reminders UI
 │   └── share.js                      "Share" modal and link generation
 │
