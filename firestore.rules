@@ -38,7 +38,7 @@ service cloud.firestore {
       allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
     }
 
-    match /Kanban_columns/{columnId} {
+    match /kanban_columns/{columnId} {
       allow read, update, delete: if isSignedIn() && resource.data.uid == request.auth.uid;
       allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
     }
