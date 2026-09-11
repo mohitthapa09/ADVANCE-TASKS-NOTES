@@ -478,12 +478,12 @@ const duplicateTask = async (taskId) => {
   showToast('Task duplicated', 'success');
 };
 
-export const initKanban = () => {
-  const root = document.getElementById('view-kanban');
+export const initTasks = () => {
+  const root = document.getElementById('view-tasks');
 
   root.innerHTML = `
     <div class="board-header">
-      <h1>🗂️ Kanban Board</h1>
+      <h1>🗂️ Tasks</h1>
       <button class="btn btn-primary" id="new-task-btn"><i class="fa-solid fa-plus"></i> New Task</button>
     </div>
     <div class="kanban-board" id="kanban-board"></div>
