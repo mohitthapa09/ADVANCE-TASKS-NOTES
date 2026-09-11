@@ -10,7 +10,7 @@ import { initShare, openShareModal } from '../../components/share.js';
 import { initNotifications } from '../../components/notifications.js';
 import { showToast } from './utils.js';
 
-const views = ['dashboard', 'notes', 'tasks', 'kanban'];
+const views = ['dashboard', 'notes', 'kanban'];
 
 const showView = (view) => {
   if (!views.includes(view)) view = 'dashboard';
