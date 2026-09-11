@@ -58,7 +58,11 @@ const loadBoardData = () => {
     columns = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     if (!columns.length && !seeded) {
       seeded = true;
-      seedDefaultColumns();
+    
+    seedDefaultColumns().catch((err) => {
+      console.error('Failed to create default columns:', err);
+      showToast(`Could not create default columns: ${firebaseErrorMessage(err)}`, 'error');
+    });
     }
     renderBoard();
   }, (err) => {
