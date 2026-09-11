@@ -31,7 +31,7 @@ onAuthStateChanged(auth, (user) => {
   initSidebar();
   initDashboard();
   initNotes();
-  initKanban();
+  initTasks();
   initExport();
   initShare();
   initNotifications(user);

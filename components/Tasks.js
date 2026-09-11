@@ -32,7 +32,7 @@ const sortByOrder = (arr) => [...arr].sort((a, b) => (a.order || 0) - (b.order |
 const seedDefaultColumns = async () => {
   const uidVal = auth.currentUser.uid;
   for (const col of DEFAULT_COLUMNS) {
-    const ref = doc(collection(db, 'Kanban_columns'));
+    const ref = doc(collection(db, 'kanban_columns'));
     await setDoc(ref, {
       id: ref.id,
       uid: uidVal,
