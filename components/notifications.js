@@ -121,7 +121,7 @@ const checkDueReminders = async (uid) => {
 };
 
 export const initNotifications = (user) => {
-  // Sorted client-side (see comment in tasks.js) so a missing Firestore
+  // Sorted client-side (see comment in Kanban.js) so a missing Firestore
   // composite index can't silently break the notifications list/badge.
   const notifQuery = query(collection(db, 'notifications'), where('uid', '==', user.uid));
 

@@ -29,7 +29,7 @@ const fetchAllData = async () => {
   const [notesSnap, tasksSnap, columnsSnap] = await Promise.all([
     getDocs(query(collection(db, 'notes'), where('uid', '==', uidVal))),
     getDocs(query(collection(db, 'tasks'), where('uid', '==', uidVal))),
-    getDocs(query(collection(db, 'tasks_columns'), where('uid', '==', uidVal)))
+    getDocs(query(collection(db, 'Kanban_columns'), where('uid', '==', uidVal)))
   ]);
   return {
     notes: notesSnap.docs.map((d) => d.data()),
