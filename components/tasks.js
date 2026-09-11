@@ -53,7 +53,7 @@ const loadBoardData = () => {
   // Firebase console, onSnapshot fails silently and the board never
   // updates — which looked like "adding a column/task does nothing, the
   // dialog just closes." Sorting client-side avoids that dependency.
-  const colsQuery = query(collection(db, 'Kanban_columns'), where('uid', '==', uidVal));
+  const colsQuery = query(collection(db, 'kanban_columns'), where('uid', '==', uidVal));
   onSnapshot(colsQuery, (snap) => {
     columns = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     if (!columns.length && !seeded) {
