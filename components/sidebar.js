@@ -8,7 +8,7 @@ export const initSidebar = () => {
     <button class="sidebar-item" data-view="notes">
       <i class="fa-solid fa-note-sticky"></i> Notes
     </button>
-    <button class="sidebar-item" data-view="Kanban">
+    <button class="sidebar-item" data-view="kanban">
       <i class="fa-solid fa-list-check"></i> Kanban
     </button>
     <button class="sidebar-item" data-view="dashboard" id="sidebar-export">
